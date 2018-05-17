@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
+using TaskManager.Helper;
 using TaskManager.Models;
 using TaskManager.Repository;
 
@@ -37,7 +38,9 @@ namespace TaskManager.Controllers
             }
 
             var profileRepo = new ProfileRepository();
-            var profile = profileRepo.GetByEmailPassword(model.Email, model.Password);
+
+            var passwordCrypto = CryptoHelper.CryptoPassword(model.Password);
+            var profile = profileRepo.GetByEmailPassword(model.Email, passwordCrypto);
 
             if (profile != null)
             {

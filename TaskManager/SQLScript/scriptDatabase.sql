@@ -36,4 +36,4 @@ INSERT INTO Role VALUES ('Admin', 1);
 
 INSERT INTO Role VALUES ('Team', 1); 
 
-INSERT INTO Profile(Name, Email, Password, RoleId, IsActive) VALUES ('admin', 'admin@admin.com.br', '1234', 1, 1);
+INSERT INTO Profile(Name, Email, Password, RoleId, IsActive) VALUES ('admin', 'admin@admin.com.br', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 1, 1);
