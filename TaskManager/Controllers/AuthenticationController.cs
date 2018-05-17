@@ -20,6 +20,8 @@ namespace TaskManager.Controllers
                 ReturnUrl = returnUrl
             };
 
+            LogoutCookie();
+            Session.Abandon();
             return View(model);
         }
 
@@ -42,10 +44,14 @@ namespace TaskManager.Controllers
                     new Claim(ClaimTypes.Email, profile.Email),
                     new Claim(ClaimTypes.Role, profile.Role.Description)
                 }, "ApplicationCookie");
+
+
                 var context = Request.GetOwinContext();
                 var authManager = context.Authentication;
 
                 authManager.SignIn(identity);
+
+                Session["UserId"] = profile.Id;
                 return Redirect(GetRedirectUrl(model.ReturnUrl));
             }
 
@@ -53,6 +59,13 @@ namespace TaskManager.Controllers
             return View();
         }
 
+        public ActionResult LogOut()
+        {
+            LogoutCookie();
+            Session.Abandon();
+            Session.Clear();
+            return RedirectToAction("index", "task");
+        }
         private string GetRedirectUrl(string returnUrl)
         {
             if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
@@ -60,6 +73,14 @@ namespace TaskManager.Controllers
                 return Url.Action("index", "task");
             }
             return returnUrl;
+        }
+
+        private void LogoutCookie()
+        {
+            var context = Request.GetOwinContext();
+            var authManager = context.Authentication;
+
+            authManager.SignOut("ApplicationCookie");
         }
 
 

@@ -4,11 +4,13 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TaskManager.Helper;
 using TaskManager.Models;
 using TaskManager.Repository;
 
 namespace TaskManager.Controllers
 {
+    [SecurityAuthorization(Roles = "Admin")]
     public class ProfileController : Controller
     {
 
