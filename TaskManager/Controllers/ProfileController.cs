@@ -38,7 +38,6 @@ namespace TaskManager.Controllers
         {
             var profileRepo = new ProfileRepository();
 
-
             Boolean isInsert = profile.Id == 0L;
 
             if (isInsert)

@@ -29,8 +29,19 @@ namespace TaskManager.Controllers
 
             var taskRepo = new TaskRepository();
             Task task = null;
+            List<long> subTasksIds = new List<long>();
             if (id != null)
+            {
                 task = taskRepo.GetById(id ?? default(long));
+                var subTasks = taskRepo.GetSubtasks(task.Id);
+
+                foreach(var subTask in subTasks)
+                {
+                    subTasksIds.Add(subTask.Id);
+                }
+            }
+            ViewBag.SubTaskSelected = subTasksIds;
+                
 
             List<Task> candidatesTaskDependencies = null;
             var profileRepo = new ProfileRepository();
@@ -49,13 +60,15 @@ namespace TaskManager.Controllers
                     candidatesTaskDependencies = taskRepo.GetBySponsorId(myProfile.Id);
             }
 
+
+
             ViewBag.candidatesTaskDependecies = candidatesTaskDependencies;
 
             return View(task);
         }
 
         [HttpPost]
-        public ActionResult Save(Task task)
+        public ActionResult Save(Task task, List<long> TasksIds)
         {
             var taskRepo = new TaskRepository();
             task.IsActive = true;
@@ -64,10 +77,12 @@ namespace TaskManager.Controllers
             try
             {
                 task.Sponsor = profileRepo.GetById(task.SponsorId);
-                taskRepo.EditOrCreate(task);
+                task = taskRepo.EditOrCreate(task);
+
+                SaveSubTasks(task, TasksIds, taskRepo);
                 return RedirectToAction("Index");
             }
-            catch (SqlException)
+            catch (SqlException e)
             {
                 return View("edit", task);
             }
@@ -79,6 +94,25 @@ namespace TaskManager.Controllers
             taskRepo.Delete(id);
 
             return RedirectToAction("Index");
+        }
+
+        private void SaveSubTasks(Task task, List<long> subTasksIds, TaskRepository taskRepo)
+        {
+            var taskDependencyRepo = new TaskDependencyRepository();
+            taskDependencyRepo.DeleteAllInTask(task.Id); 
+
+            foreach(var subTaskId in subTasksIds)
+            {
+                var subTask = taskRepo.GetById(subTaskId);
+                var subTaskDependency = new TaskDependency
+                {
+                    IsActive = true,
+                    Task = task,
+                    PendingTask = subTask
+                };
+
+                taskDependencyRepo.EditOrCreate(subTaskDependency);
+            }
         }
     }
 }
