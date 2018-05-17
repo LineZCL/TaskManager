@@ -91,9 +91,13 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\HomeControllerTest.cs" />
+    <Compile Include="Repository\BaseRepositoryTest.cs" />
+    <Compile Include="Repository\ProfileRepositoryTest.cs" />
+    <Compile Include="Repository\TaskRepositoryTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
+    <Content Include="SQLScript\scriptDatabase.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
