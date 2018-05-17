@@ -22,15 +22,18 @@ namespace TaskManager.Models
     [PrimaryKey("id", AutoIncrement = true)]
     public class Task : BaseModel
     {
+        [Display(Name = "Descrição")]
         [Required(ErrorMessage = "O campo descrição é obrigatório")]
         public string Description { get; set; }
 
         public TaskStatus? Status { get; set; }
 
+        [Display(Name = "Data")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         [Required(ErrorMessage = "O campo data é obrigatório")]
         public DateTime Date { get; set; }
 
+        [Display(Name = "Responsável")]
         [Reference(ReferenceType.Foreign, ColumnName = "SponsorId", ReferenceMemberName = "Id")]
         public Profile Sponsor { get; set; }
 

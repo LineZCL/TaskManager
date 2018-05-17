@@ -21,9 +21,8 @@ namespace TaskManager.Controllers
             var tasks = taskRepo.GetAll();
 
             var identity = (ClaimsIdentity)User.Identity;
-            string roleConnected = CookieHelper.GetInfoUserConnected(identity, "role");
-
-            ViewBag.IsAdmin = roleConnected.Equals("Admin");
+           
+            ViewBag.IsAdmin = GetRole().Equals("Admin");
             ViewBag.Email = CookieHelper.GetInfoUserConnected(identity, "email");
 
             return View(tasks);
@@ -32,7 +31,6 @@ namespace TaskManager.Controllers
         public ActionResult Edit(long? id)
         {
             var identity = (ClaimsIdentity)User.Identity;
-            string roleConnected = CookieHelper.GetInfoUserConnected(identity, "role");
 
             var taskRepo = new TaskRepository();
             Task task = null;
@@ -43,8 +41,10 @@ namespace TaskManager.Controllers
                 task = taskRepo.GetById(id ?? default(long));
             }
 
-            GenerateViewBagSponser(id ?? default(long), roleConnected);
-            GenerateViewBagSubTask(id ?? default(long), taskRepo, roleConnected);
+            String role = GetRole();
+            ViewBag.IsAdmin = role.Equals("Admin");
+            GenerateViewBagSponser(id ?? default(long), role);
+            GenerateViewBagSubTask(id ?? default(long), taskRepo, role);
 
             return View(task);
         }
@@ -85,10 +85,11 @@ namespace TaskManager.Controllers
             }
             else
             {
+                string role = GetRole();
                 ModelState.AddModelError("Status" , error);
-
-                GenerateViewBagSponser(task.Id, GetRole());
-                GenerateViewBagSubTask(task.Id, new TaskRepository(), GetRole());
+                ViewBag.IsAdmin = role.Equals("Admin");
+                GenerateViewBagSponser(task.Id, role);
+                GenerateViewBagSubTask(task.Id, new TaskRepository(), role);
                 return View("edit", task);
             }
         }

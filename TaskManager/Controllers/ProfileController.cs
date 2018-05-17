@@ -27,8 +27,13 @@ namespace TaskManager.Controllers
         {
             var profileRepo = new ProfileRepository();
             Profile profile = null;
-            if (id != null)
+
+            Boolean isEdit = id != null; 
+            if (isEdit)
+            { 
                 profile = profileRepo.GetById(id ?? default(long));
+            }
+            ViewBag.IsEdit = isEdit;
 
             return View("Edit", profile);
         }
@@ -65,6 +70,7 @@ namespace TaskManager.Controllers
             catch (SqlException)
             {
                 ModelState.AddModelError("Email", "Email duplicado!");
+                ViewBag.IsEdit = false;
                 return View("Edit", profile);
             }
         }

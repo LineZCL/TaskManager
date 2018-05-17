@@ -22,6 +22,9 @@ namespace TaskManager.Controllers
 
             LogoutCookie();
             Session.Abandon();
+
+            ViewBag.IsDislogged = true;
+      
             return View(model);
         }
 
