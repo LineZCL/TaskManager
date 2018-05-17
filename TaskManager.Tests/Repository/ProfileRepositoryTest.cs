@@ -30,8 +30,6 @@ namespace TaskManager.Tests.Repository
             role = new Role { Description = "Team", IsActive = true };
             role = roleRepo.EditOrCreate(role);
 
-          
-
         }
 
         [TestCleanup]

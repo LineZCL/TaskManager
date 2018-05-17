@@ -19,6 +19,13 @@ namespace TaskManager.Controllers
             var taskRepo = new TaskRepository();
 
             var tasks = taskRepo.GetAll();
+
+            var identity = (ClaimsIdentity)User.Identity;
+            string roleConnected = CookieHelper.GetInfoUserConnected(identity, "role");
+
+            ViewBag.IsAdmin = roleConnected.Equals("Admin");
+            ViewBag.Email = CookieHelper.GetInfoUserConnected(identity, "email");
+
             return View(tasks);
         }
 
@@ -30,18 +37,19 @@ namespace TaskManager.Controllers
             var taskRepo = new TaskRepository();
             Task task = null;
             List<long> subTasksIds = new List<long>();
+
             if (id != null)
             {
                 task = taskRepo.GetById(id ?? default(long));
                 var subTasks = taskRepo.GetSubtasks(task.Id);
 
-                foreach(var subTask in subTasks)
+                foreach (var subTask in subTasks)
                 {
                     subTasksIds.Add(subTask.Id);
                 }
             }
             ViewBag.SubTaskSelected = subTasksIds;
-                
+
 
             List<Task> candidatesTaskDependencies = null;
             var profileRepo = new ProfileRepository();
@@ -51,16 +59,24 @@ namespace TaskManager.Controllers
                 var profiles = profileRepo.GetAll();
                 ViewBag.profiles = profiles;
 
-                candidatesTaskDependencies = taskRepo.GetAll();
+                if (id == null)
+                    candidatesTaskDependencies = taskRepo.GetAll();
+                else
+                    candidatesTaskDependencies = taskRepo.GetAll(task.Id);
             }
             else
             {
                 var myProfile = profileRepo.GetByEmail(CookieHelper.GetInfoUserConnected(identity, "email"));
                 if (myProfile != null)
-                    candidatesTaskDependencies = taskRepo.GetBySponsorId(myProfile.Id);
+                {
+                    if (id == null)
+                        candidatesTaskDependencies = taskRepo.GetBySponsorId(myProfile.Id);
+                    else
+                    {
+                        candidatesTaskDependencies = taskRepo.GetBySponsorId(myProfile.Id, task.Id);
+                    }
+                }
             }
-
-
 
             ViewBag.candidatesTaskDependecies = candidatesTaskDependencies;
 
@@ -82,7 +98,7 @@ namespace TaskManager.Controllers
                 SaveSubTasks(task, TasksIds, taskRepo);
                 return RedirectToAction("Index");
             }
-            catch (SqlException e)
+            catch (SqlException)
             {
                 return View("edit", task);
             }
@@ -99,9 +115,9 @@ namespace TaskManager.Controllers
         private void SaveSubTasks(Task task, List<long> subTasksIds, TaskRepository taskRepo)
         {
             var taskDependencyRepo = new TaskDependencyRepository();
-            taskDependencyRepo.DeleteAllInTask(task.Id); 
+            taskDependencyRepo.DeleteAllInTask(task.Id);
 
-            foreach(var subTaskId in subTasksIds)
+            foreach (var subTaskId in subTasksIds)
             {
                 var subTask = taskRepo.GetById(subTaskId);
                 var subTaskDependency = new TaskDependency

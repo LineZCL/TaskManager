@@ -41,7 +41,9 @@
             @Html.DisplayFor(modelItem => item.Sponsor.Name)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+            @if(ViewBag.IsAdmin || ViewBag.Email.Equals(item.Sponsor.Email)){ 
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) 
+            }
 
             @Html.ActionLink("Delete", "Delete", new { id = item.Id })
         </td>
