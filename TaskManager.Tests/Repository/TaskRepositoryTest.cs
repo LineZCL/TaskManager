@@ -61,7 +61,7 @@ namespace TaskManager.Tests.Repository
         {
             var task = new Task {
                 Description = "Task 1",
-                SponsorId = profile.Id,
+                Sponsor = profile,
                 Status = TaskStatus.PENDING,
                 Date = DateTime.Now,
                 IsActive = true
@@ -81,7 +81,7 @@ namespace TaskManager.Tests.Repository
         {
             var task = new Task
             {
-                SponsorId = profile.Id,
+                Sponsor = profile,
                 Status = TaskStatus.PENDING,
                 Date = DateTime.Now,
                 IsActive = true
@@ -96,7 +96,7 @@ namespace TaskManager.Tests.Repository
             var task = new Task
             {
                 Description = "Task 1",
-                SponsorId = profile.Id,
+                Sponsor = profile,
                 Date = DateTime.Now,
                 IsActive = true
             };
@@ -110,7 +110,7 @@ namespace TaskManager.Tests.Repository
             var task = new Task
             {
                 Description = "Task 1",
-                SponsorId = profile.Id,
+                Sponsor = profile,
                 Status = TaskStatus.PENDING,
                 IsActive = true
             };

@@ -8,13 +8,13 @@ namespace TaskManager.Models
 {
     public enum TaskStatus
     {
-        [Description("Pendente")]
+        [Display(Name = "Pendente")]
         PENDING,
-        [Description("Em Produção")]
+        [Display(Name = "Em Produção")]
         PRODUCTION,
-        [Description("Suspensa")]
+        [Display(Name = "Suspensa")]
         SUSPENSION,
-        [Description("Finalizada")]
+        [Display(Name = "Finalizada")]
         FINISHED
     }
 
@@ -27,13 +27,15 @@ namespace TaskManager.Models
 
         public TaskStatus? Status { get; set; }
 
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         [Required(ErrorMessage = "O campo data é obrigatório")]
         public DateTime Date { get; set; }
 
-        public long SponsorId { get; set; }
+        [Reference(ReferenceType.Foreign, ColumnName = "SponsorId", ReferenceMemberName = "Id")]
+        public Profile Sponsor { get; set; }
 
         [Ignore]
-        public Profile Sponsor { get; set; }
+        public int SponsorId { get; set; }
 
         public List<Task> PendingTasks { get; set; }
     }
