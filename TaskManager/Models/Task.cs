@@ -34,9 +34,6 @@ namespace TaskManager.Models
         [Reference(ReferenceType.Foreign, ColumnName = "SponsorId", ReferenceMemberName = "Id")]
         public Profile Sponsor { get; set; }
 
-        [Ignore]
-        public int SponsorId { get; set; }
-
         public List<Task> PendingTasks { get; set; }
     }
 }

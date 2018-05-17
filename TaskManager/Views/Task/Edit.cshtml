@@ -50,7 +50,7 @@
                 <select name="SponsorId" class="form-control">
                     @foreach (var profile in ViewBag.Profiles)
                     {
-                        if (Model != null && Model.Sponsor.Id == profile.Id)
+                        if (Model != null && Model.Sponsor != null  && Model.Sponsor.Id == profile.Id)
                         {
                             <option value=@profile.Id selected="selected">@profile.Name</option>
                         }
@@ -62,26 +62,20 @@
                 </select>
             </div>
         </div>
-        @*<div class="form-group">
-            @Html.LabelFor(model => model.Sponsor, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("SponsorId", new SelectList(ViewBag.Profiles, "Id", "Name"), new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
-            </div>
-        </div>*@
+      
     }
     else
     {
         @Html.HiddenFor(model => model.Sponsor)
     }
 
-    @if (ViewBag.candidatesTaskDependecies != null)
+    @if (ViewBag.candidatesSubTasks != null)
     {
         <div class="form-group">
             <label for="TasksIds" class="control-label col-md-2">Sub-tarefas</label>
             <div class="col-md-10">
                 <select name="TasksIds" multiple="multiple" class="form-control">
-                    @foreach (var task in ViewBag.candidatesTaskDependecies)
+                    @foreach (var task in ViewBag.candidatesSubTasks)
                     {
                         if (ViewBag.SubTaskSelected.Contains(task.Id))
                         {

@@ -36,70 +36,59 @@ namespace TaskManager.Controllers
 
             var taskRepo = new TaskRepository();
             Task task = null;
-            List<long> subTasksIds = new List<long>();
+            
 
             if (id != null)
             {
                 task = taskRepo.GetById(id ?? default(long));
-                var subTasks = taskRepo.GetSubtasks(task.Id);
-
-                foreach (var subTask in subTasks)
-                {
-                    subTasksIds.Add(subTask.Id);
-                }
-            }
-            ViewBag.SubTaskSelected = subTasksIds;
-
-
-            List<Task> candidatesTaskDependencies = null;
-            var profileRepo = new ProfileRepository();
-
-            if (roleConnected.Equals("Admin"))
-            {
-                var profiles = profileRepo.GetAll();
-                ViewBag.profiles = profiles;
-
-                if (id == null)
-                    candidatesTaskDependencies = taskRepo.GetAll();
-                else
-                    candidatesTaskDependencies = taskRepo.GetAll(task.Id);
-            }
-            else
-            {
-                var myProfile = profileRepo.GetByEmail(CookieHelper.GetInfoUserConnected(identity, "email"));
-                if (myProfile != null)
-                {
-                    if (id == null)
-                        candidatesTaskDependencies = taskRepo.GetBySponsorId(myProfile.Id);
-                    else
-                    {
-                        candidatesTaskDependencies = taskRepo.GetBySponsorId(myProfile.Id, task.Id);
-                    }
-                }
             }
 
-            ViewBag.candidatesTaskDependecies = candidatesTaskDependencies;
+            GenerateViewBagSponser(id ?? default(long), roleConnected);
+            GenerateViewBagSubTask(id ?? default(long), taskRepo, roleConnected);
 
             return View(task);
         }
 
         [HttpPost]
-        public ActionResult Save(Task task, List<long> TasksIds)
+        public ActionResult Save(Task task, List<long> TasksIds, long? SponsorId)
         {
             var taskRepo = new TaskRepository();
-            task.IsActive = true;
+            TaskStatusHelper taskStatusHelper = new TaskStatusHelper(taskRepo);
 
             var profileRepo = new ProfileRepository();
-            try
+            task.IsActive = true;
+            if (SponsorId != null)
             {
-                task.Sponsor = profileRepo.GetById(task.SponsorId);
-                task = taskRepo.EditOrCreate(task);
-
-                SaveSubTasks(task, TasksIds, taskRepo);
-                return RedirectToAction("Index");
+                task.Sponsor = profileRepo.GetById(SponsorId ?? default(long));
             }
-            catch (SqlException)
+            else
             {
+                task.Sponsor = GetUserLogged();
+            }
+
+            string error = taskStatusHelper.validateStatusChange(task);
+            if (error == null || error.Equals(""))
+            {
+                try
+                {
+                    task = taskRepo.EditOrCreate(task);
+                    if (TasksIds != null)
+                    {
+                        SaveSubTasks(task, TasksIds, taskRepo);
+                    }
+                    return RedirectToAction("Index");
+                }
+                catch (SqlException)
+                {
+                    return View("edit", task);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("Status" , error);
+
+                GenerateViewBagSponser(task.Id, GetRole());
+                GenerateViewBagSubTask(task.Id, new TaskRepository(), GetRole());
                 return View("edit", task);
             }
         }
@@ -129,6 +118,74 @@ namespace TaskManager.Controllers
 
                 taskDependencyRepo.EditOrCreate(subTaskDependency);
             }
+        }
+
+        private Profile GetUserLogged()
+        {
+            var identity = (ClaimsIdentity)User.Identity;
+            string email = CookieHelper.GetInfoUserConnected(identity, "email");
+
+            var profileRepo = new ProfileRepository();
+            return profileRepo.GetByEmail(email);
+
+        }
+
+        private String GetRole()
+        {
+            var identity = (ClaimsIdentity)User.Identity;
+            return CookieHelper.GetInfoUserConnected(identity, "role");
+
+            
+
+        }
+
+
+        private void GenerateViewBagSponser(long taskId, string role)
+        {
+            var profileRepository = new ProfileRepository();
+           if (role.Equals("Admin"))
+            {
+                var profiles = profileRepository.GetAll();
+                ViewBag.profiles = profiles;
+            }
+
+        }
+
+        private void GenerateViewBagSubTask(long taskId, TaskRepository taskRepo, String role)
+        {
+            var isInsert = taskId == 0;
+            List<long> subTasksIds = new List<long>();
+            var subTasks = taskRepo.GetSubtasks(taskId);
+            foreach (var subTask in subTasks)
+            {
+                subTasksIds.Add(subTask.Id);
+            }
+            ViewBag.SubTaskSelected = subTasksIds;
+
+            List<Task> candidatesSubTasks = null;
+            
+            if (role.Equals("Admin"))
+            {
+                if (isInsert)
+                    candidatesSubTasks = taskRepo.GetAll();
+                else
+                    candidatesSubTasks = taskRepo.GetAll(taskId);
+            }
+            else
+            {
+                var userLogged = GetUserLogged();
+                if (userLogged != null)
+                {
+                    if (isInsert)
+                        candidatesSubTasks = taskRepo.GetBySponsorId(userLogged.Id);
+                    else
+                    {
+                        candidatesSubTasks = taskRepo.GetBySponsorId(userLogged.Id, taskId);
+                    }
+                }
+            }
+
+            ViewBag.candidatesSubTasks = candidatesSubTasks;
         }
     }
 }

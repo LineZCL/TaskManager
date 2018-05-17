@@ -177,6 +177,7 @@
     <Compile Include="Helper\CookieHelper.cs" />
     <Compile Include="Helper\CryptoHelper.cs" />
     <Compile Include="Helper\SecurityAuthorization.cs" />
+    <Compile Include="Helper\TaskStatusHelper.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\Login.cs" />
     <Compile Include="Models\Role.cs" />

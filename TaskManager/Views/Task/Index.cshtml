@@ -41,11 +41,12 @@
             @Html.DisplayFor(modelItem => item.Sponsor.Name)
         </td>
         <td>
-            @if(ViewBag.IsAdmin || ViewBag.Email.Equals(item.Sponsor.Email)){ 
+            @if ((ViewBag.IsAdmin || ViewBag.Email.Equals(item.Sponsor.Email)) && item.Status != TaskManager.Models.TaskStatus.FINISHED)
+            {
                 @Html.ActionLink("Edit", "Edit", new { id = item.Id }) 
+                
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
             }
-
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
         </td>
     </tr>
 }
