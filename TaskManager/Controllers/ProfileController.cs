@@ -64,6 +64,8 @@ namespace TaskManager.Controllers
                 profile.IsActive = true;
                 profile.Role = role;
 
+                profile.Password = CryptoHelper.CryptoPassword(profile.Password);
+
                 profileRepo.EditOrCreate(profile);
                 return RedirectToAction("Index");
             }

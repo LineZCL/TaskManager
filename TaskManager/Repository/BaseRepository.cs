@@ -10,6 +10,17 @@ namespace TaskManager.Repository
 
         protected const String CONNECTION_STRING_NAME = "CSTaskManager";
 
+        /**
+         * Busca todos os dados da tabela que estão ativas ou não. 
+         **/ 
+        public virtual List<T> GetAllData()
+        {
+            using (Database db = new Database(CONNECTION_STRING_NAME))
+            {
+                return db.Fetch<T>();
+            }
+        }
+
         public virtual List<T> GetAll()
         {
             using (Database db = new Database(CONNECTION_STRING_NAME))
