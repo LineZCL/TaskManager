@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Tarefas</h2>
 
 <p>
     @Html.ActionLink("Cadastrar nova tarefa", "Edit")
@@ -41,9 +41,12 @@
             @Html.DisplayFor(modelItem => item.Sponsor.Name)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            @if ((ViewBag.IsAdmin || ViewBag.Email.Equals(item.Sponsor.Email)) && item.Status != TaskManager.Models.TaskStatus.FINISHED)
+            {
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) 
+                
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            }
         </td>
     </tr>
 }

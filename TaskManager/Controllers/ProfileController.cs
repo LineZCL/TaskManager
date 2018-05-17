@@ -4,11 +4,13 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TaskManager.Helper;
 using TaskManager.Models;
 using TaskManager.Repository;
 
 namespace TaskManager.Controllers
 {
+    [SecurityAuthorization(Roles = "Admin")]
     public class ProfileController : Controller
     {
 
@@ -25,8 +27,13 @@ namespace TaskManager.Controllers
         {
             var profileRepo = new ProfileRepository();
             Profile profile = null;
-            if (id != null)
+
+            Boolean isEdit = id != null; 
+            if (isEdit)
+            { 
                 profile = profileRepo.GetById(id ?? default(long));
+            }
+            ViewBag.IsEdit = isEdit;
 
             return View("Edit", profile);
         }
@@ -35,7 +42,6 @@ namespace TaskManager.Controllers
         public ActionResult Save(Profile profile)
         {
             var profileRepo = new ProfileRepository();
-
 
             Boolean isInsert = profile.Id == 0L;
 
@@ -64,6 +70,7 @@ namespace TaskManager.Controllers
             catch (SqlException)
             {
                 ModelState.AddModelError("Email", "Email duplicado!");
+                ViewBag.IsEdit = false;
                 return View("Edit", profile);
             }
         }

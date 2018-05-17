@@ -59,10 +59,13 @@ namespace TaskManager.Repository
             using(Database db = new Database(CONNECTION_STRING_NAME))
             {
                 var profile = db.SingleOrDefault<Profile>("WHERE Email LIKE @0  AND Password LIKE @1", email, password);
-                string sql = "SELECT r.* FROM Profile p INNER JOIN Role r ON p.RoleId = r.Id " +
-                        "WHERE p.id = @0";
-                var role = db.SingleOrDefault<Role>(sql, profile.Id);
-                profile.Role = role;
+                if (profile != null)
+                {
+                    string sql = "SELECT r.* FROM Profile p INNER JOIN Role r ON p.RoleId = r.Id " +
+                            "WHERE p.id = @0";
+                    var role = db.SingleOrDefault<Role>(sql, profile.Id);
+                    profile.Role = role;
+                }
                 return profile;
             }
         }
