@@ -7,11 +7,9 @@ using System.ComponentModel.DataAnnotations;
 namespace TaskManager.Models
 {
     [TableName("Profile")]
-    [PrimaryKey("Id", AutoIncrement = true)]
-    public class Profile
+    [PrimaryKey("id", AutoIncrement = true)]
+    public class Profile : BaseModel
     {
-        public long Id{ get; set; }
-
         [Required(ErrorMessage = "O campo nome é obrigatório.")]
         public string Name { get; set; }
 
@@ -23,10 +21,9 @@ namespace TaskManager.Models
         [MaxLength(16, ErrorMessage = "A senha pode ter até 16 caracteres.")]
         public string Password { get; set; }
 
-        public Boolean IsActive { get; set; }
-
         public List<Task> Tasks { get; set; }
 
+        [Reference(ReferenceType.Foreign, ColumnName = "RoleId", ReferenceMemberName ="Id")]
         public Role Role { get; set; }
     }
 }
