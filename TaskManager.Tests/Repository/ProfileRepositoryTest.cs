@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using TaskManager.Models;
 using TaskManager.Repository;
+using TaskManager.Tests.Helper;
 
 namespace TaskManager.Tests.Repository
 {
@@ -20,6 +21,7 @@ namespace TaskManager.Tests.Repository
         [TestInitialize]
         public void TestInitialize()
         {
+            DatabaseHelper.CleanDatabase();
             roleRepo = new RoleRepository();
             profileRepo = new ProfileRepository();
 
@@ -35,9 +37,8 @@ namespace TaskManager.Tests.Repository
         [TestCleanup]
         public void Clean()
         {
-            foreach (var profile in profiles)
-                profileRepo.DeleteDatabase(profile.Id);
-            roleRepo.DeleteDatabase(role.Id);
+           
+            DatabaseHelper.CleanDatabase();
         }
 
         [TestMethod]
@@ -202,6 +203,32 @@ namespace TaskManager.Tests.Repository
             profiles.Add(profile);
 
             var profileInDb = profileRepo.GetByEmail("maria@teste123.com.brd");
+            Assert.IsNull(profileInDb);
+        }
+
+        [TestMethod]
+        public void GetByEmailPasswordSuccess()
+        {
+            var profile = new Profile
+            {
+                Name = "Maria",
+                Email = "maria@teste123.com.br",
+                Password = "12345678",
+                Role = role,
+                IsActive = true
+            };
+            profile = profileRepo.EditOrCreate(profile);
+            profiles.Add(profile);
+
+            var profileInDb = profileRepo.GetByEmailPassword("maria@teste123.com.br", "12345678");
+            Assert.IsNotNull(profileInDb);
+        }
+
+        [TestMethod]
+        public void GetByEmailPasswordNotFound()
+        {
+            
+            var profileInDb = profileRepo.GetByEmailPassword("maria@teste123.com.br", "12345678");
             Assert.IsNull(profileInDb);
         }
     }

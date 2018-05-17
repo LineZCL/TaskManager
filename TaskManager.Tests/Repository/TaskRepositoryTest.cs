@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using TaskManager.Models;
 using TaskManager.Repository;
+using TaskManager.Tests.Helper;
 
 namespace TaskManager.Tests.Repository
 {
@@ -25,6 +26,7 @@ namespace TaskManager.Tests.Repository
         [TestInitialize]
         public void TestInitialize()
         {
+            DatabaseHelper.CleanDatabase();
             roleRepo = new RoleRepository();
             profileRepo = new ProfileRepository();
             taskRepository = new TaskRepository(); 
@@ -49,11 +51,7 @@ namespace TaskManager.Tests.Repository
         [TestCleanup]
         public void Clean()
         {
-            foreach (var task in tasks)
-                taskRepository.DeleteDatabase(task.Id);
-
-            profileRepo.DeleteDatabase(profile.Id);
-            roleRepo.DeleteDatabase(role.Id);
+            DatabaseHelper.CleanDatabase();
         }
 
         [TestMethod]

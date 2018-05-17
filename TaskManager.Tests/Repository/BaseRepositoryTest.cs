@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using TaskManager.Models;
 using TaskManager.Repository;
+using TaskManager.Tests.Helper;
 
 namespace TaskManager.Tests.Repository
 {
@@ -20,6 +21,8 @@ namespace TaskManager.Tests.Repository
         [TestInitialize]
         public void TestInitialize()
         {
+            DatabaseHelper.CleanDatabase();
+
             roleRepo = new RoleRepository();
             profileRepo = new ProfileRepository();
 
@@ -35,9 +38,7 @@ namespace TaskManager.Tests.Repository
         [TestCleanup]
         public void Clean()
         {
-            foreach (var profile in profiles)
-                profileRepo.DeleteDatabase(profile.Id);
-            roleRepo.DeleteDatabase(role.Id);
+            DatabaseHelper.CleanDatabase();
         }
 
         [TestMethod]

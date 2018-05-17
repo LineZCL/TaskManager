@@ -21,6 +21,9 @@ namespace TaskManager.Repository
 
         }
 
+        /**
+         * Buscar todas as task menos a dona do Id, para não vincular uma task a ela mesma
+         **/
         public List<Task> GetAll(long taskId)
         {
             using (Database db = new Database(CONNECTION_STRING_NAME))
@@ -41,6 +44,7 @@ namespace TaskManager.Repository
             }
         }
 
+     
         public List<Task> GetBySponsorId(long sponsorId)
         {
             using (Database db = new Database(CONNECTION_STRING_NAME))
@@ -49,6 +53,10 @@ namespace TaskManager.Repository
                 return db.Fetch<Task>(sql, sponsorId);
             }
         }
+
+        /**
+         * Buscar todas as tasks do responsável logado menos a dona do Id, para não vincular uma task a ela mesma
+         **/
         public List<Task> GetBySponsorId(long sponsorId, long taskId)
         {
             using (Database db = new Database(CONNECTION_STRING_NAME))
@@ -67,6 +75,9 @@ namespace TaskManager.Repository
             }
         }
 
+        /**
+         * Busca todas as tasks relacionadas que não foram terminadas
+         * */
         public List<Task> GetSubtasksNotFinished(long taskId)
         {
             using (Database db = new Database(CONNECTION_STRING_NAME))
