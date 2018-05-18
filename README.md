@@ -37,3 +37,4 @@ Existem algumas melhorias que precisam ser feitas.
 * Mudar o Layout
 * Trocar o Status da tarefa que hoje está em Enum para uma tabela no Banco de dados. 
 * Melhorar tanto a lógica quanto a view de vincular uma tarefa na outra
+* Testar os controllers
